@@ -88,7 +88,37 @@ const DATA = [
 ];
 
 export default class HomeScreen extends Component {
-    state = { user: '' }
+    state = {
+        user: '',
+        isFavourite: false,
+        isArchive: false,
+    }
+    _storeData = async () => {
+        try {
+            await AsyncStorage.setItem('testData', JSON.stringify(DATA));
+        } catch (error) {
+            console.log("Error: ", error)
+        }
+    };
+    _retrieveData = async () => {
+        try {
+            let value = await AsyncStorage.getItem('testData');
+            if (value !== null) {
+                console.log("value: ", value);
+            }
+        } catch (error) {
+            console.log("Error: ", error)
+        }
+    };
+    componentDidMount() {
+        this._storeData();
+        this._retrieveData();
+    }
+    updateChoice(type) {
+        let newState = { ...this.state };
+        newState[type] = !newState[type];
+        this.setState(newState);
+    }
     updateUser = (user) => {
         this.setState({ user: user })
     }
@@ -121,12 +151,12 @@ export default class HomeScreen extends Component {
                                 color="#999"
                             />
                         </TouchableOpacity>}
-                        <TouchableOpacity style={{ paddingLeft: 8 }}>
+                        <TouchableOpacity style={{ paddingLeft: 8 }} onPress={() => { this.updateChoice('isFavourite') }}>
                             <Ionicons
                                 style={{}}
                                 name="md-heart"
                                 size={22}
-                                color={data.isFavourite ? "blue" : "#999"}
+                                color={this.state.isFavourite ? "blue" : "#999"}
                             />
                         </TouchableOpacity>
                     </View>
@@ -141,34 +171,32 @@ export default class HomeScreen extends Component {
         return (
             <SafeAreaView style={{
                 flex: 1,
+                backgroundColor: '#fff'
             }}>
-                <View style={styles.container}>
+                <View style={{
+                    backgroundColor: "white",
+                    paddingHorizontal: 10,
+                    paddingTop: 5
+                }}>
                     <Text style={{ fontSize: 15, color: "#333", }}>WELCOME</Text>
                     <Text style={{ fontSize: 24, color: "#000", }}>JOHN DOE.</Text>
-                    {/* <Picker style={{}} selectedValue={this.state.user} onValueChange={this.updateUser}>
-                        <Picker.Item label="Steve" value="steve" />
-                        <Picker.Item label="Ellen" value="ellen" />
-                        <Picker.Item label="Maria" value="maria" />
-                    </Picker> */}
                     <Text style={styles.text}>{this.state.user}</Text>
                 </View>
                 <View style={styles.container}>
                     <FlatList
                         showsVerticalScrollIndicator={false}
                         data={DATA}
-                        renderItem={({ item }) => { return this.Item({ data: item }); }}
+                        renderItem={({ item, index }) => { return this.Item({ data: item, index }); }}
                         keyExtractor={(item, index) => `cart_${index}`}
-                        numColumns={1}
-                    // ListFooterComponent={}
                     />
                 </View>
-            </SafeAreaView >
+            </SafeAreaView>
         )
     }
 }
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
+        flex: 1,
         backgroundColor: "white",
         paddingHorizontal: 10,
         paddingTop: 5
