@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView } from 'rea
 import Ionicons from 'react-native-vector-icons/Ionicons';
 export default class DetailScreen extends React.Component {
     render() {
+        const DATA = this.props.navigation.getParam('data')
         return (
             <View style={styles.container}>
                 <Image
@@ -25,14 +26,14 @@ export default class DetailScreen extends React.Component {
                                 style={{}}
                                 name="md-heart"
                                 size={22}
-                                color="blue"
+                                color={DATA.isFavourite ? 'blue' : '#ccc'}
                             />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.paragraph}>EVENTS.</Text>
+                    <Text style={styles.paragraph}>{DATA.title}</Text>
                     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }} showsVerticalScrollIndicator={false} bounces={false}>
 
-                        <Text style={{ fontSize: 17, marginVertical: 15, flex: 1 }}>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. </Text>
+                        <Text style={{ fontSize: 17, marginVertical: 15, flex: 1 }}>{DATA.detail}</Text>
                         <TouchableOpacity style={{ width: "100%", height: 45, backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center', marginBottom: 30, marginTop: 5 }}>
                             <Text style={{ color: 'white', fontWeight: 'bold' }}>Ok</Text>
                         </TouchableOpacity>
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         backgroundColor: '#ecf0f1',
-        marginTop: 30,
+        // marginTop: 30,
     },
     paragraph: {
         fontSize: 22,

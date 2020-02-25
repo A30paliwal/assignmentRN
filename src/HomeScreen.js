@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-community/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import CategoryModal from './CategoryModal'
+import { CategoryModal } from './CategoryModal'
 const DATA = [
     {
         id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -91,7 +91,8 @@ const DATA = [
 export default class HomeScreen extends Component {
     state = {
         user: '',
-        modalVisible: true,
+        data: [],
+        modalVisible: false,
     }
     setModalVisible(visible) {
         this.setState({ modalVisible: visible });
@@ -107,7 +108,8 @@ export default class HomeScreen extends Component {
         try {
             let value = await AsyncStorage.getItem('testData');
             if (value !== null) {
-                console.log("value: ", value);
+                this.setState({ data: JSON.parse(value) })
+                console.log("value: ", this.state.data);
             }
         } catch (error) {
             console.log("Error: ", error)
@@ -117,17 +119,18 @@ export default class HomeScreen extends Component {
         this._storeData();
         this._retrieveData();
     }
-    updateChoice(type) {
-        let newState = { ...this.state };
-        newState[type] = !newState[type];
-        this.setState(newState);
+    updateChoice(index, type = "isFavourite") {
+        let tempData = [...this.state.data];
+        tempData[index][type] = !tempData[index][type]
+        this.setState({ data: [...tempData] });
     }
     updateUser = (user) => {
         this.setState({ user: user })
     }
-    Item({ data }) {
+    Item({ data, index }) {
+        console.log(data);
         return (
-            <View style={{
+            <TouchableOpacity style={{
                 backgroundColor: '#fff', height: 150, flexDirection: 'row', flex: 1, marginVertical: 10, shadowColor: "#000",
                 shadowOffset: {
                     width: 0,
@@ -135,31 +138,34 @@ export default class HomeScreen extends Component {
                 },
                 shadowOpacity: 0.25,
                 shadowRadius: 3.84,
-
                 elevation: 5,
-            }}>
+            }} onPress={() => {
+                this.props.navigation.navigate('details', {
+                    data: data
+                })
+            }} activeOpacity={0.8}>
                 <Image
                     source={data.image}
                     style={{ height: "100%", flex: 0.4 }}
                 />
                 <View style={{ flex: 0.6 }}>
                     <View style={{ flexDirection: 'row', marginBottom: 20, paddingTop: 8, paddingHorizontal: 10, }}>
-                        <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'red', flex: 1 }}>{data.title}
+                        <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'black', flex: 1 }}>{data.title}
                         </Text>
-                        {data.isArchive && <TouchableOpacity style={{}}>
+                        <TouchableOpacity style={{}} onPress={() => { this.updateChoice(index, 'isArchive') }}>
                             <Ionicons
                                 style={{}}
                                 name="md-archive"
                                 size={22}
                                 color="#999"
                             />
-                        </TouchableOpacity>}
-                        <TouchableOpacity style={{ paddingLeft: 8 }} onPress={() => { this.updateChoice('isFavourite') }}>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ paddingLeft: 8 }} onPress={() => { this.updateChoice(index) }}>
                             <Ionicons
                                 style={{}}
                                 name="md-heart"
                                 size={22}
-                                color={this.state.isFavourite ? "blue" : "#999"}
+                                color={data.isFavourite ? "blue" : "#999"}
                             />
                         </TouchableOpacity>
                     </View>
@@ -167,7 +173,7 @@ export default class HomeScreen extends Component {
                     </Text>
                     <Text style={{ fontSize: 14, color: '#0d0d0d', paddingBottom: 8, paddingHorizontal: 10 }} numberOfLines={3} ellipsizeMode='tail'>{data.detail}</Text>
                 </View>
-            </View>
+            </TouchableOpacity>
         );
     }
     render() {
@@ -183,10 +189,8 @@ export default class HomeScreen extends Component {
                 }}>
                     <Text style={{ fontSize: 15, color: "#333", }}>WELCOME</Text>
                     <Text style={{ fontSize: 24, color: "#000", }}>JOHN DOE.</Text>
-                    {/* <Text style={styles.text}>{this.state.user}</Text> */}
                     <TouchableOpacity onPress={() => {
-                        this.setModalVisible(true);
-                        <CategoryModal />
+                        this.setState({ modalVisible: true });
                     }} style={{ flexDirection: "row", backgroundColor: '#ccc', borderColor: "#ccc", borderWidth: 1, marginTop: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ flex: 1, paddingLeft: 10, padding: 5, color: '#333', fontSize: 18 }}>CATEGORY</Text>
                         <Ionicons
@@ -201,11 +205,14 @@ export default class HomeScreen extends Component {
                 <View style={styles.container}>
                     <FlatList
                         showsVerticalScrollIndicator={false}
-                        data={DATA}
+                        data={this.state.data}
                         renderItem={({ item, index }) => { return this.Item({ data: item, index }); }}
                         keyExtractor={(item, index) => `cart_${index}`}
                     />
                 </View>
+                {this.state.modalVisible && <CategoryModal callBack={() => {
+                    this.setState({ modalVisible: false })
+                }} />}
             </SafeAreaView>
         )
     }

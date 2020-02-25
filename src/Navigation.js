@@ -38,6 +38,21 @@ const HomeStackNavigator = createStackNavigator(
                 },
             }
         },
+        details: {
+            screen: DetailScreen,
+            navigationOptions: {
+                title: "Detail",
+                headerShown: true,
+                headerTintColor: "#000",
+                headerStyle: {
+                    backgroundColor: '#fff',
+                },
+                headerTitleAlign: 'center',
+                headerTitleStyle: {
+                    fontSize: 22
+                },
+            }
+        },
     },
 );
 const InitialNavigator = createSwitchNavigator({

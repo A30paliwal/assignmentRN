@@ -62,7 +62,6 @@ function CategoryListing() {
         },
         [selected],
     );
-
     return (
         <FlatList
             showsVerticalScrollIndicator={false}
@@ -84,40 +83,41 @@ function CategoryListing() {
     );
 }
 
-export default class CategoryModal extends React.Component {
-    state = {
-        modalVisible: false,
-    };
-    setModalVisible(visible) {
-        this.setState({ modalVisible: visible });
-    }
-    render() {
-        return (
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={true}
-                onRequestClose={() => {
-                    this.setModalVisible(!this.state.modalVisible);
-                }}>
-                <View style={{
-                    marginHorizontal: 10, flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'stretch'
-                }}>
-                    <View style={{ backgroundColor: '#fff', padding: 15 }}>
-                        <Text style={{ fontSize: 24, marginVertical: 15, fontWeight: '200' }}>SELECT CATEGORY.</Text>
-                        <CategoryListing />
-                        <TouchableOpacity style={{ width: "100%", height: 45, backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center', marginTop: 35 }} onPress={() => this.setModalVisible(!this.state.modalVisible)
+const CategoryModal = (props) => {
+    const [modalVisible, setModalVisible] = React.useState(true);
+    return (
+        // <View style={{ height: 100, width: 100, backgroundColor: 'red' }}><Text>hfkjdhwk</Text></View>
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+                setModalVisible(!modalVisible);
+            }}>
+            <View style={{
+                marginHorizontal: 10, flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'stretch'
+            }}>
+                <View style={{ backgroundColor: '#fff', padding: 15 }}>
+                    <Text style={{ fontSize: 24, marginVertical: 15, fontWeight: '200' }}>SELECT CATEGORY.</Text>
+                    <CategoryListing />
+                    <TouchableOpacity
+                        style={{
+                            width: "100%", height: 45, backgroundColor: 'blue', justifyContent: 'center',
+                            alignItems: 'center', marginTop: 35
+                        }} onPress={() => {
+                            setModalVisible(!modalVisible);
+                            props.callBack()
+                        }
                         }>
-                            <Text style={{ color: 'white', fontWeight: 'bold' }}>Ok</Text>
-                        </TouchableOpacity>
-                    </View>
+                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Ok</Text>
+                    </TouchableOpacity>
                 </View>
-            </Modal>
-
-        );
-    }
+            </View>
+        </Modal>
+    );
 }
 
+export { CategoryModal };
