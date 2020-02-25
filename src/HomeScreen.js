@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-community/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import CategoryModal from './CategoryModal'
 const DATA = [
     {
         id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -90,8 +91,10 @@ const DATA = [
 export default class HomeScreen extends Component {
     state = {
         user: '',
-        isFavourite: false,
-        isArchive: false,
+        modalVisible: true,
+    }
+    setModalVisible(visible) {
+        this.setState({ modalVisible: visible });
     }
     _storeData = async () => {
         try {
@@ -180,7 +183,20 @@ export default class HomeScreen extends Component {
                 }}>
                     <Text style={{ fontSize: 15, color: "#333", }}>WELCOME</Text>
                     <Text style={{ fontSize: 24, color: "#000", }}>JOHN DOE.</Text>
-                    <Text style={styles.text}>{this.state.user}</Text>
+                    {/* <Text style={styles.text}>{this.state.user}</Text> */}
+                    <TouchableOpacity onPress={() => {
+                        this.setModalVisible(true);
+                        <CategoryModal />
+                    }} style={{ flexDirection: "row", backgroundColor: '#ccc', borderColor: "#ccc", borderWidth: 1, marginTop: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ flex: 1, paddingLeft: 10, padding: 5, color: '#333', fontSize: 18 }}>CATEGORY</Text>
+                        <Ionicons
+                            style={{ paddingRight: 10 }}
+                            size={20}
+                            name="ios-arrow-down"
+                            color="#222"
+                        />
+                    </TouchableOpacity>
+
                 </View>
                 <View style={styles.container}>
                     <FlatList
