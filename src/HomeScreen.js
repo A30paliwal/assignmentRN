@@ -12,98 +12,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-community/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { CategoryModal } from './CategoryModal'
-const DATA = [
-    {
-        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-        title: "Offers",
-        image: require("../Assets/placeholder.png"),
-        subTitle: "What is Lorem Ipsum?",
-        detail: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-        isArchive: true,
-        isFavourite: true,
-    },
-    {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-        title: "Events",
-        image: require("../Assets/placeholder.png"),
-        subTitle: "What is Lorem Ipsum?",
-        detail: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-        isArchive: true,
-        isFavourite: true,
-    },
-    {
-        id: "58694a0f-3da1-471f-bd96-145571e29d72",
-        title: "News",
-        image: require("../Assets/placeholder.png"),
-        subTitle: "What is Lorem Ipsum?",
-        detail: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-        isArchive: false,
-        isFavourite: true,
-    },
-    {
-        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-        title: "Updates",
-        image: require("../Assets/placeholder.png"),
-        subTitle: "What is Lorem Ipsum?",
-        detail: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-        isArchive: true,
-        isFavourite: true,
-    },
-    {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-        title: "News",
-        image: require("../Assets/placeholder.png"),
-        subTitle: "What is Lorem Ipsum?",
-        detail: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-        isArchive: false,
-        isFavourite: false,
-    },
-    {
-        id: "58694a0f-3da1-471f-bd96-145571e29d72",
-        title: "News",
-        image: require("../Assets/placeholder.png"),
-        subTitle: "What is Lorem Ipsum?",
-        detail: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-        isArchive: true,
-        isFavourite: false,
-    },
-    {
-        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-        title: "Updates",
-        image: require("../Assets/placeholder.png"),
-        subTitle: "What is Lorem Ipsum?",
-        detail: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-        isArchive: true,
-        isFavourite: true,
-    },
-    {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-        title: "Updates",
-        image: require("../Assets/placeholder.png"),
-        subTitle: "What is Lorem Ipsum?",
-        detail: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-        isArchive: true,
-        isFavourite: false,
-    },
-];
-
+import { CategoryModal } from './CategoryModal';
 export default class HomeScreen extends Component {
     state = {
         user: '',
         data: [],
         modalVisible: false,
     }
-    setModalVisible(visible) {
-        this.setState({ modalVisible: visible });
-    }
-    _storeData = async () => {
-        try {
-            await AsyncStorage.setItem('testData', JSON.stringify(DATA));
-        } catch (error) {
-            console.log("Error: ", error)
-        }
-    };
     _retrieveData = async () => {
         try {
             let value = await AsyncStorage.getItem('testData');
@@ -116,19 +31,15 @@ export default class HomeScreen extends Component {
         }
     };
     componentDidMount() {
-        this._storeData();
         this._retrieveData();
     }
     updateChoice(index, type = "isFavourite") {
         let tempData = [...this.state.data];
         tempData[index][type] = !tempData[index][type]
         this.setState({ data: [...tempData] });
-    }
-    updateUser = (user) => {
-        this.setState({ user: user })
+        AsyncStorage.setItem('tempData', JSON.stringify(this.state.data));
     }
     Item({ data, index }) {
-        console.log(data);
         return (
             <TouchableOpacity style={{
                 backgroundColor: '#fff', height: 150, flexDirection: 'row', flex: 1, marginVertical: 10, shadowColor: "#000",
@@ -176,6 +87,15 @@ export default class HomeScreen extends Component {
             </TouchableOpacity>
         );
     }
+    async removeLoginData(key) {
+        try {
+            await AsyncStorage.removeItem(key);
+            return true;
+        }
+        catch (exception) {
+            return false;
+        }
+    }
     render() {
         return (
             <SafeAreaView style={{
@@ -187,6 +107,10 @@ export default class HomeScreen extends Component {
                     paddingHorizontal: 10,
                     paddingTop: 5
                 }}>
+                    <Ionicons style={{ paddingRight: 10, alignSelf: 'flex-end' }} onPress={() => {
+                        this.removeLoginData('userData');
+                        this.props.navigation.navigate('Auth');
+                    }} size={25} name="md-power" color="#222" />
                     <Text style={{ fontSize: 15, color: "#333", }}>WELCOME</Text>
                     <Text style={{ fontSize: 24, color: "#000", }}>JOHN DOE.</Text>
                     <TouchableOpacity onPress={() => {

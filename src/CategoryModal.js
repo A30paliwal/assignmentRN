@@ -1,37 +1,7 @@
 import * as React from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Button, View, Text, Modal, TouchableHighlight, Alert, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-const DATA = [
-    {
-        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba1",
-        title: "Updates",
-    },
-    {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f632",
-        title: "Events",
-    },
-    {
-        id: "58694a0f-3da1-471f-bd96-145571e29d723",
-        title: "News",
-    },
-
-    {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f634",
-        title: "Offers",
-    },
-    {
-        id: "58694a0f-3da1-471f-bd96-145571e29d725",
-        title: "Favourites",
-    },
-    {
-        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba6",
-        title: "Show archives",
-    },
-    {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f637",
-        title: "Show all",
-    },
-];
+import { View, Text, Modal, FlatList, TouchableOpacity, } from 'react-native';
+import { categoryData } from './data';
 function Item({ id, title, selected, onSelect }) {
     return (
         <TouchableOpacity activeOpacity={1} style={{
@@ -53,6 +23,7 @@ function Item({ id, title, selected, onSelect }) {
 
 function CategoryListing() {
     const [selected, setSelected] = React.useState(new Map());
+    const [data, setData] = React.useState(new Map());
 
     const onSelect = React.useCallback(
         id => {
@@ -65,7 +36,7 @@ function CategoryListing() {
     return (
         <FlatList
             showsVerticalScrollIndicator={false}
-            data={DATA}
+            data={categoryData}
             renderItem={({ item }) => (
                 <Item
                     id={item.id}

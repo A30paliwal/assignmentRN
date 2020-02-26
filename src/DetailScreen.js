@@ -2,8 +2,26 @@ import * as React from 'react';
 import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 export default class DetailScreen extends React.Component {
+    constructor(props) {
+        super(props)
+        const DATA = this.props.navigation.getParam('data');
+        this.state = {
+            data: DATA
+        };
+    };
+
+    componentDidMount() {
+        console.log(this.state.data);
+        console.log(this.state.data["isFavourite"]);
+    }
+    updateChoice(type = "isFavourite") {
+        let tempData = [...this.state.data];
+        console.log("tempData:  ", tempData);
+        tempData[type] = !tempData[type];
+        this.setState({ data: [...tempData] });
+    }
     render() {
-        const DATA = this.props.navigation.getParam('data')
+
         return (
             <View style={styles.container}>
                 <Image
@@ -15,6 +33,7 @@ export default class DetailScreen extends React.Component {
                         <Text style={{ flex: 1 }} />
                         <TouchableOpacity style={{ paddingRight: 20 }}>
                             <Ionicons
+                                onPress={() => { this.updateChoice('isArchive') }}
                                 style={{}}
                                 name="md-archive"
                                 size={22}
@@ -23,17 +42,18 @@ export default class DetailScreen extends React.Component {
                         </TouchableOpacity>
                         <TouchableOpacity style={{}}>
                             <Ionicons
+                                onPress={() => { this.updateChoice() }}
                                 style={{}}
                                 name="md-heart"
                                 size={22}
-                                color={DATA.isFavourite ? 'blue' : '#ccc'}
+                                color={this.state.data.isFavourite ? 'blue' : '#ccc'}
                             />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.paragraph}>{DATA.title}</Text>
+                    <Text style={styles.paragraph}>{this.state.data.title}</Text>
                     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }} showsVerticalScrollIndicator={false} bounces={false}>
 
-                        <Text style={{ fontSize: 17, marginVertical: 15, flex: 1 }}>{DATA.detail}</Text>
+                        <Text style={{ fontSize: 17, marginVertical: 15, flex: 1 }}>{this.state.data.detail}</Text>
                         <TouchableOpacity style={{ width: "100%", height: 45, backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center', marginBottom: 30, marginTop: 5 }}>
                             <Text style={{ color: 'white', fontWeight: 'bold' }}>Ok</Text>
                         </TouchableOpacity>
