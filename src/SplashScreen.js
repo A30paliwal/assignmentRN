@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import {
-    Text,
-} from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -16,8 +14,6 @@ export default class SplashScreen extends Component {
     }
 
     async componentDidMount() {
-        // Preload data from an external API
-        // Preload data using AsyncStorage
         const data = await this.performTimeConsumingTask();
 
         if (data !== null) {
@@ -26,8 +22,6 @@ export default class SplashScreen extends Component {
     }
     _bootstrapAsync = async () => {
         const userData = await AsyncStorage.getItem('userData');
-        // This will switch to the App screen or Auth screen and this loading
-        // screen will be unmounted and thrown away.
         console.log('userData: ', userData);
         this.props.navigation.navigate(userData ? 'Home' : 'Auth');
     };
@@ -39,7 +33,7 @@ export default class SplashScreen extends Component {
         )
     }
 }
-const styles = {
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "white",
@@ -52,4 +46,4 @@ const styles = {
         color: "#F56367",
         paddingVertical: 5
     }
-}
+});

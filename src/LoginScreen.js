@@ -24,13 +24,13 @@ export default class Login extends Component {
     loginValidation = () => {
         const { email, pass } = this.state;
         if (email == '') {
-            Alert.alert('Please enter email.')
+            Alert.alert('Error', 'Please enter email.')
         }
         else if (!email.match(mailformat)) {
-            Alert.alert('Please enter valid email.')
+            Alert.alert('Error', 'Please enter valid email.')
         }
         else if (pass == '') {
-            Alert.alert('Please enter password.')
+            Alert.alert('Error', 'Please enter password.')
         }
         else {
             this.storeLoginData(email);
@@ -80,8 +80,6 @@ export default class Login extends Component {
                         <TouchableOpacity style={styles.buttonContainer} activeOpacity={0.8} onPress={this.loginValidation}>
                             <Text style={styles.buttonText} >Login</Text>
                         </TouchableOpacity>
-                        <Text style={styles.buttonText2}>Create Account</Text>
-                        <Text style={styles.buttonText2}>Forgot password?</Text>
 
                     </View>
                 </ScrollView>
@@ -144,12 +142,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         padding: 10,
-    },
-    buttonText2: {
-        color: '#0066FF',
-        fontSize: 18,
-        paddingVertical: 10,
-        fontWeight: '600',
-        marginHorizontal: 30,
     },
 });

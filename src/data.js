@@ -75,32 +75,32 @@ export const DATA = [
 
 export const categoryData = [
     {
-        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba1",
+        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba11",
         title: "Updates",
     },
     {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f632",
+        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f6322",
         title: "Events",
     },
     {
-        id: "58694a0f-3da1-471f-bd96-145571e29d723",
+        id: "58694a0f-3da1-471f-bd96-145571e29d7233",
         title: "News",
     },
 
     {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f634",
+        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f6344",
         title: "Offers",
     },
     {
-        id: "58694a0f-3da1-471f-bd96-145571e29d725",
+        id: "58694a0f-3da1-471f-bd96-145571e29d7255",
         title: "Favourites",
     },
     {
-        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba6",
+        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba66",
         title: "Show archives",
     },
     {
-        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f637",
+        id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f6377",
         title: "Show all",
     },
 ];

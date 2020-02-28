@@ -1,14 +1,5 @@
 import React, { Component } from 'react';
-import {
-    View,
-    Text,
-    Image,
-    Picker,
-    StyleSheet,
-    FlatList,
-    Dimensions,
-    TouchableOpacity
-} from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-community/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -19,6 +10,8 @@ export default class HomeScreen extends Component {
         data: [],
         rawData: [],
         modalVisible: false,
+        id: '',
+        name: ''
     }
 
     constructor(props) {
@@ -26,7 +19,7 @@ export default class HomeScreen extends Component {
         const DATA = this.props.navigation.getParam('data');
         console.log("PreviousData: ", DATA);
         this.selectedIndex = -1;
-        this.selectedCategory = "";
+        this.selectedCategory = "Show all";
     }
     _retrieveData = async () => {
         try {
@@ -34,7 +27,6 @@ export default class HomeScreen extends Component {
             if (value !== null) {
                 this.setState({ data: JSON.parse(value) })
                 this.setState({ rawData: JSON.parse(value) })
-                console.log("value: ", this.state.data);
             }
         } catch (error) {
             console.log("Error: ", error)
@@ -45,15 +37,53 @@ export default class HomeScreen extends Component {
             let value = await AsyncStorage.getItem('userData');
             if (value !== null) {
                 this.setState({ user: JSON.parse(value) })
-                console.log("value: ", this.state.user);
             }
         } catch (error) {
             console.log("Error: ", error)
         }
     };
+    returnData(data, index) {
+        let childData = JSON.parse(data);
+        this.updateChildData(this.state.data, childData, index);
+    }
+    updateChildData(data, item, index) {
+        data[index] = item
+        this.setState({ data: data })
+        this.filterCategory(this.state.data);
+        return this.state.data;
+
+    }
     componentDidMount() {
         this._retrieveData();
         this._retrieveUserData();
+    }
+    showAlert = (data, index, type) => {
+        return type == 1 ? Alert.alert(
+            'Archive',
+            data.isArchive ? 'Are you sure to Unarchive this entry?' : 'Are you sure to archive this entry?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => this.updateChoice(index, 'isArchive') },
+            ],
+            { cancelable: false },
+        ) : data.isFavourite == true ? Alert.alert(
+            'Archive',
+            'Are you sure to Unfavourite this entry?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => this.updateChoice(index) },
+            ],
+            { cancelable: false },
+        ) : this.updateChoice(index);
+
     }
     updateChoice(index, type = "isFavourite") {
         let tempData = [...this.state.data];
@@ -65,23 +95,14 @@ export default class HomeScreen extends Component {
         else if (this.selectedCategory) {
             this.filterCategory(this.state.rawData, this.selectedCategory);
         }
-        AsyncStorage.setItem('tempData', JSON.stringify(this.state.data));
     }
     Item({ data, index }) {
         return (
-            <TouchableOpacity style={{
-                backgroundColor: this.state.modalVisible ? '#666' : '#fff',
-                height: 150, flexDirection: 'row', flex: 1, marginTop: 10, shadowColor: "#000",
-                shadowOffset: {
-                    width: 0,
-                    height: 2,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                elevation: 2,
-            }} onPress={() => {
+            <TouchableOpacity style={[{ backgroundColor: this.state.modalVisible ? '#666' : '#fff' }, styles.listContainer]} onPress={() => {
                 this.props.navigation.navigate('details', {
-                    data: data
+                    data: data,
+                    index: index,
+                    returnData: this.returnData.bind(this)
                 })
             }} activeOpacity={0.8}>
                 <Image
@@ -89,26 +110,26 @@ export default class HomeScreen extends Component {
                     style={{ height: "100%", flex: 0.4 }}
                 />
                 <View style={{ flex: 0.6 }}>
-                    <View style={{ flexDirection: 'row', marginBottom: 20, paddingTop: 8, paddingHorizontal: 10, }}>
-                        <Text style={{ fontSize: 17, fontWeight: 'bold', color: 'black', flex: 1 }}>{data.title}</Text>
+                    <View style={styles.listTitle}>
+                        <Text style={styles.textTitle}>{data.title}</Text>
                         <Ionicons
-                            onPress={() => { this.updateChoice(index, 'isArchive') }}
-                            style={{}}
+                            onPress={() => { this.showAlert(data, index, 1) }}
+                            style={styles.icons}
                             name="md-archive"
                             size={22}
                             color={data.isArchive ? 'blue' : '#ccc'}
                         />
                         <Ionicons
-                            onPress={() => { this.updateChoice(index) }}
-                            style={{ paddingLeft: 10 }}
+                            onPress={() => { this.showAlert(data, index) }}
+                            style={[{ paddingLeft: 10 }, styles.icons]}
                             name="md-heart"
                             size={22}
                             color={data.isFavourite ? "blue" : "#ccc"}
                         />
                     </View>
-                    <Text style={{ fontSize: 14, color: '#0d0d0d', paddingBottom: 8, paddingHorizontal: 10 }}>{data.subTitle}
+                    <Text style={[{ fontWeight: 'bold' }, styles.textSubTitles]}>{data.subTitle}
                     </Text>
-                    <Text style={{ fontSize: 14, color: '#0d0d0d', paddingBottom: 8, paddingHorizontal: 10 }} numberOfLines={3} ellipsizeMode='tail'>{data.detail}</Text>
+                    <Text style={styles.textSubTitles} numberOfLines={3} ellipsizeMode='tail'>{data.detail}</Text>
                 </View>
             </TouchableOpacity >
         );
@@ -160,14 +181,15 @@ export default class HomeScreen extends Component {
                 <View style={{ backgroundColor: this.state.modalVisible ? 'rgba(0,0,0,0.5)' : '#fff', paddingHorizontal: 10, paddingTop: 10 }}>
                     <Ionicons style={{ paddingRight: 10, alignSelf: 'flex-end' }} onPress={() => {
                         this.removeLoginData('userData');
+                        this.removeLoginData('testData');
                         this.props.navigation.navigate('Auth');
                     }} size={25} name="md-power" color="#222" />
                     <Text style={{ fontSize: 15, color: "#333", }}>WELCOME</Text>
                     <Text style={{ fontSize: 22, color: "#000", }}>{this.state.user}</Text>
                     <TouchableOpacity onPress={() => {
                         this.setState({ modalVisible: true });
-                    }} style={{ flexDirection: "row", backgroundColor: '#ccc', borderColor: "#ccc", borderWidth: 1, marginTop: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ flex: 1, paddingLeft: 10, padding: 5, color: '#333', fontSize: 18 }}>{this.selectedCategory == "" ? "CATEGORY" : this.selectedCategory}</Text>
+                    }} style={styles.categoryButton}>
+                        <Text style={styles.categoryButtonText}>{this.selectedCategory == "" ? "CATEGORY" : this.selectedCategory}</Text>
                         <Ionicons
                             style={{ paddingRight: 10 }}
                             size={20}
@@ -175,7 +197,6 @@ export default class HomeScreen extends Component {
                             color="#222"
                         />
                     </TouchableOpacity>
-
                 </View>
                 <View style={[styles.container, this.state.modalVisible ? { backgroundColor: 'rgba(0,0,0,0.5)' } : '#fff']}>
                     <FlatList
@@ -191,7 +212,6 @@ export default class HomeScreen extends Component {
                     <CategoryModal
                         selectedIndex={this.selectedIndex}
                         callBack={(item, index) => {
-
                             this.selectedIndex = index;
                             this.selectedCategory = item;
                             this.setState({ modalVisible: false });
@@ -210,5 +230,62 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 10,
         paddingTop: 5
+    },
+    listContainer: {
+        height: 150,
+        flexDirection: 'row',
+        flex: 1,
+        marginTop: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 2,
+    },
+    icons: {
+        lineHeight: 30,
+        width: 30,
+        textAlign: 'center',
+        alignSelf: 'center'
+    },
+    textSubTitles: {
+        fontSize: 14,
+        color: '#0d0d0d',
+        paddingBottom: 8,
+        paddingHorizontal: 10
+    },
+    categoryButton: {
+        flexDirection: "row",
+        backgroundColor: '#ccc',
+        borderColor: "#ccc",
+        borderWidth: 1,
+        marginTop: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    categoryButtonText: {
+        flex: 1,
+        paddingLeft: 10,
+        padding: 5,
+        color: '#333',
+        fontSize: 18
+    },
+    listTitle: {
+        flexDirection: 'row',
+        marginBottom: 20,
+        paddingTop: 8,
+        paddingHorizontal: 10,
+    },
+    textTitle: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: 'black',
+        flex: 1,
+        lineHeight: 30,
+        width: 30
     }
 });

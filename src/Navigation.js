@@ -1,11 +1,8 @@
-import React, { Component } from 'react';
-import { View, TouchableOpacity, Dimensions } from 'react-native';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Login from './LoginScreen';
 import Home from './HomeScreen';
 import DetailScreen from './DetailScreen';
-// import MyOrders from '../../Screens/SideBarModule/OrdersScreen';
 import SplashScreen from './SplashScreen';
 
 const AuthNavigator = createStackNavigator(
